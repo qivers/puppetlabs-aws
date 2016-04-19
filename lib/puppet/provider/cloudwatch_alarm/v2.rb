@@ -30,8 +30,7 @@ Puppet::Type.type(:cloudwatch_alarm).provide(:v2, :parent => PuppetX::Puppetlabs
     end
   end
 
-  read_only(:region, :alarm_actions)
-  read_only(:region, :ok_actions)
+  read_only(:region, :alarm_actions, :ok_actions)
 
   def self.alarm_to_hash(region, alarm)
     response = autoscaling_client(region).describe_policies(
