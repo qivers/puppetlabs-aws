@@ -31,10 +31,12 @@ Puppet::Type.type(:cloudwatch_alarm).provide(:v2, :parent => PuppetX::Puppetlabs
   end
 
   read_only(:region, :alarm_actions)
+  read_only(:region, :ok_actions)
 
   def self.alarm_to_hash(region, alarm)
     response = autoscaling_client(region).describe_policies(
-      policy_names: alarm.alarm_actions
+      policy_names: alarm.alarm_actions,
+      policy_names: alarm.ok_actions
     )
     actions = response.scaling_policies.collect(&:policy_name)
     {
@@ -47,7 +49,8 @@ Puppet::Type.type(:cloudwatch_alarm).provide(:v2, :parent => PuppetX::Puppetlabs
       evaluation_periods: alarm.evaluation_periods,
       comparison_operator: alarm.comparison_operator,
       ensure: :present,
-      alarm_actions: actions,
+      alarm_actions: alarm_actions,
+      ok_actions: ok_actions,
       region: region,
       dimensions: alarm.dimensions.collect { |v| { v.name => v.value} }
     }
@@ -83,16 +86,27 @@ Puppet::Type.type(:cloudwatch_alarm).provide(:v2, :parent => PuppetX::Puppetlabs
       config[:dimensions] = dimensions.flatten
     end
 
-    actions = []
+    alarm_actions = []
     alarm_actions = resource[:alarm_actions]
     alarm_actions = [alarm_actions] unless alarm_actions.is_a?(Array)
     alarm_actions.reject(&:nil?).each do |action|
       response = autoscaling_client(resource[:region]).describe_policies(
         policy_names: [action]
       )
-      actions << response.data.scaling_policies.first.policy_arn
+      alarm_actions << response.data.scaling_policies.first.policy_arn
     end
-    config[:alarm_actions] = actions
+    config[:alarm_actions] = alarm_actions
+
+    ok_actions = []
+    ok_actions = resource[:alarm_actions]
+    ok_actions = [ok_actions] unless ok_actions.is_a?(Array)
+    ok_actions.reject(&:nil?).each do |action|
+      response = autoscaling_client(resource[:region]).describe_policies(
+        policy_names: [action]
+      )
+      ok_actions << response.data.scaling_policies.first.policy_arn
+    end
+    config[:ok_actions] = ok_actions
 
     cloudwatch_client(resource[:region]).put_metric_alarm(config)
   end

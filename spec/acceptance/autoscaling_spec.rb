@@ -66,6 +66,7 @@ describe "ec2_autoscalinggroup" do
         :asg_setting          => "#{name}-asg",
         :evaluation_periods   => 2,
         :alarm_actions        => "#{name}-policy",
+        :ok_actions           => "#{name}-policy",
         :tags                 => {
           custom_name: "#{name}-asg",
         },
@@ -237,6 +238,11 @@ describe "ec2_autoscalinggroup" do
 
         it 'alarm_actions' do
           regex = /alarm_actions\s*=>\s*\['#{@asg_config[:alarm_actions]}'\]/
+          expect(@result.stdout).to match(regex)
+        end
+
+        it 'ok_actions' do
+          regex = /ok_actions\s*=>\s*\['#{@asg_config[:ok_actions]}'\]/
           expect(@result.stdout).to match(regex)
         end
 

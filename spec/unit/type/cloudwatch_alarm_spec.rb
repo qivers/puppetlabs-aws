@@ -36,6 +36,7 @@ describe type_class do
       :period,
       :dimensions,
       :alarm_actions
+      :ok_actions
     ]
   end
 
@@ -74,6 +75,7 @@ describe type_class do
     'comparison_operator',
     'region',
     'alarm_actions',
+    'ok_actions',
   ].each do |property|
     it "should require #{property} to be a string" do
       expect(type_class).to require_string_for(property)

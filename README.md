@@ -526,6 +526,9 @@ The Amazon Resource Name for the associated IAM profile.
 ##### `alarm_actions`
 *Optional* The actions to trigger when the alarm triggers. This parameter is set at creation only; it is not affected by updates. This parameter currently supports only named scaling policies.
 
+##### `ok_actions`
+*Optional* The actions to trigger when the alarm is set to OK. This parameter is set at creation only; it is not affected by updates. This parameter currently supports only named scaling policies.
+
 #### Type: ec2_autoscalinggroup
 
 ##### `name`

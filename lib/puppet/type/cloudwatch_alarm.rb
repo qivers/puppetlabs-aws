@@ -99,6 +99,13 @@ Puppet::Type.newtype(:cloudwatch_alarm) do
     end
   end
 
+  newproperty(:ok_actions, :array_matching => :all) do
+    desc 'The actions to trigger when the alarm is set to OK.'
+    validate do |value|
+      fail 'ok_actions should be a String' unless value.is_a?(String)
+    end
+  end
+
   autorequire(:ec2_scalingpolicy) do
     actions = self[:alarm_actions]
     actions.is_a?(Array) ? actions : [actions]
